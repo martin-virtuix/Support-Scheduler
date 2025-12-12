@@ -121,13 +121,8 @@
       border-bottom: 1px solid #1f2937;
     }
 
-    tbody tr:nth-child(even) {
-      background: #020617;
-    }
-
-    tbody tr:nth-child(odd) {
-      background: #020617;
-    }
+    tbody tr:nth-child(even) { background: #020617; }
+    tbody tr:nth-child(odd) { background: #020617; }
 
     tbody tr + tr td {
       border-top: 1px solid #111827;
@@ -148,6 +143,103 @@
       margin-left: 8px;
     }
 
+    /* ========= No Support List styles ========= */
+    .section-card {
+      border-radius: 12px;
+      padding: 16px 20px;
+      margin-top: 24px;
+      background: #020617;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .section-title {
+      font-size: 18px;
+      font-weight: 600;
+    }
+
+    .input {
+      width: 100%;
+      padding: 10px 12px;
+      border-radius: 10px;
+      border: 1px solid #1f2937;
+      background: #0b1220;
+      color: #e5e7eb;
+      outline: none;
+    }
+
+    .input::placeholder { color: #6b7280; }
+
+    .site-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .site-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 10px 0;
+      border-top: 1px solid #111827;
+    }
+
+    .site-name {
+      flex: 1;
+      min-width: 0;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .tags {
+      display: inline-flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .tag {
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+      border: 1px solid #1f2937;
+      color: #cbd5e1;
+      background: rgba(148, 163, 184, 0.08);
+      white-space: nowrap;
+    }
+
+    .tag-flag {
+      color: #60a5fa;
+      background: rgba(96, 165, 250, 0.12);
+      border-color: rgba(96, 165, 250, 0.25);
+    }
+
+    .tag-note {
+      color: #fbbf24;
+      background: rgba(251, 191, 36, 0.10);
+      border-color: rgba(251, 191, 36, 0.25);
+    }
+
+    .empty {
+      color: #9ca3af;
+      padding-top: 10px;
+      border-top: 1px solid #111827;
+    }
+
     .footer {
       margin-top: 16px;
       font-size: 12px;
@@ -156,34 +248,27 @@
     }
 
     @media (max-width: 640px) {
-      .container {
-        padding: 16px;
-      }
-      h1 {
-        font-size: 22px;
-      }
-      th, td {
-        padding: 8px 10px;
-      }
+      .container { padding: 16px; }
+      h1 { font-size: 22px; }
+      th, td { padding: 8px 10px; }
+      .site-name { white-space: normal; }
     }
   </style>
 </head>
+
 <body>
   <div class="container">
     <h1>Omni Arena & Omni One Support Schedule (DEC 1st - DEC 8th)</h1>
 
-    <div class="container">
-        <!-- HEADER WITH VIRTUIX LOGO -->
-        <div class="header">
-            <img
-            src="omniarena_logo_color2.png"
-            alt="Virtuix logo"
-            style="max-width: 140px; height: auto; display: block; margin: 0 auto 16px;"
-          >
-          
-          
-        </div>
-    
+    <!-- HEADER WITH VIRTUIX LOGO -->
+    <div class="header">
+      <img
+        src="omniarena_logo_color2.png"
+        alt="Virtuix logo"
+        style="max-width: 140px; height: auto; display: block; margin: 0 auto 16px;"
+      >
+    </div>
+
     <div class="now-card">
       <div class="status-row">
         <div>
@@ -200,18 +285,32 @@
     </div>
 
     <table>
-  <thead>
-    <tr>
-      <th>Day</th>
-      <th>Business hours</th>
-      <th>On duty</th>
-      <th>Notes</th>   <!-- NUEVA COLUMNA -->
-    </tr>
-  </thead>
-  <tbody id="schedule-body">
-    <!-- Filled by JS -->
-  </tbody>
-</table>
+      <thead>
+        <tr>
+          <th>Day</th>
+          <th>Business hours</th>
+          <th>On duty</th>
+          <th>Notes</th>
+        </tr>
+      </thead>
+      <tbody id="schedule-body">
+        <!-- Filled by JS -->
+      </tbody>
+    </table>
+
+    <!-- ========= No Support List ========= -->
+    <section class="section-card" id="no-support">
+      <div class="section-header">
+        <div class="section-title">No Support List</div>
+        <div class="now-subtitle" id="no-support-count"></div>
+      </div>
+      <div class="now-subtitle">
+  Sites currently excluded from support.
+  <span class="tag tag-flag">*</span> sites are behind on an old invoice and will not receive a shipment even if they submit payment.
+      </div>
+      <input id="noSupportSearch" class="input" type="search" placeholder="Search a site..." autocomplete="off" />
+      <ul id="noSupportList" class="site-list"></ul>
+    </section>
 
     <div class="footer">
       Schedule for Martin &amp; Jonathan • Autoupdates based on current day and time
@@ -219,227 +318,286 @@
   </div>
 
   <script>
-  // ====== CONFIG: URL of your published Google Sheet CSV ======
-  const SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vT_P-MDtJ5_22Dftrk9JC9gQmaWzIM_YLBVEJ7n_hyU4bm4PSgzUbWOdIB-e184eJpaL2SUqB92tumS/pub?output=csv";
+    // ====== CONFIG: URL of your published Google Sheet CSV ======
+    const SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vT_P-MDtJ5_22Dftrk9JC9gQmaWzIM_YLBVEJ7n_hyU4bm4PSgzUbWOdIB-e184eJpaL2SUqB92tumS/pub?output=csv";
 
-  // These will be filled dynamically from the sheet
-  let schedule = {};
-  let businessHours = {};
-  let notesByDay = {};
+    // These will be filled dynamically from the sheet
+    let schedule = {};
+    let businessHours = {};
+    let notesByDay = {};
 
- // For Date.getDay() -> key (0 = Sunday, 6 = Saturday)
-const keyByIndex = [
-  "sunday", "monday", "tuesday", "wednesday",
-  "thursday", "friday", "saturday"
-];
+    // ========= No Support List data =========
+    const NO_SUPPORT_SITES = [
+      { name: "Accelerate – Milwaukee" },
+      { name: "Accelerate Mokena" },
+      { name: "Crossroads" },
+      { name: "DiVRgence" },
+      { name: "Fast Lane" },
+      { name: "Lake Area Adventures" },
+      { name: "Launch Leominster" },
+      { name: "Launch Warwick", flag: "*" },
+      { name: "Margaritaville", flag: "*" },
+      { name: "No Surrender" },
+      { name: "Palace Social", flag: "*" },
+      { name: "SacTown" },
+      { name: "Skyzone Topeka" },
+      { name: "The Jump Station" },
+      { name: "The Zone San Juan" },
+      { name: "Funzilla" },
+      { name: "Yakima" },
+      { name: "Back Alley Lanes" },
+      { name: "Xtreme Action Park", note: "BUT: rectifying lost check" },
+      { name: "Launch Gurnee", note: "CC Expired" },
+      { name: "MB2" },
+      { name: "Thunder Road" },
+      { name: "Monster Mini Golf" },
+      { name: "Laurel Lanes" },
+    ];
 
-// Label per key
-const dayLabel = {
-  monday: "Monday",
-  tuesday: "Tuesday",
-  wednesday: "Wednesday",
-  thursday: "Thursday",
-  friday: "Friday",
-  saturday: "Saturday",
-  sunday: "Sunday"
-};
+    function renderNoSupportList(filterText = "") {
+      const ul = document.getElementById("noSupportList");
+      const countEl = document.getElementById("no-support-count");
+      if (!ul) return;
 
-// Order in which we want to DISPLAY rows (Mon -> Sun)
-const displayOrder = [
-  "monday",
-  "tuesday",
-  "wednesday",
-  "thursday",
-  "friday",
-  "saturday",
-  "sunday"
-];
+      const q = (filterText || "").trim().toLowerCase();
 
- async function loadScheduleFromSheet() {
-  const res = await fetch(SHEET_CSV_URL);
-  const csv = await res.text();
+      const items = NO_SUPPORT_SITES
+        .filter(s => {
+          const haystack = `${s.name} ${s.note || ""} ${s.flag || ""}`.toLowerCase();
+          return haystack.includes(q);
+        })
+        .sort((a, b) => a.name.localeCompare(b.name));
 
-  const lines = csv.trim().split(/\r?\n/);
-  if (lines.length < 2) return;
+      if (countEl) {
+        countEl.textContent = `${items.length} / ${NO_SUPPORT_SITES.length} shown`;
+      }
 
-  const sched = {};
-  const hours = {};
+      if (!items.length) {
+        ul.innerHTML = `<li class="empty">No matches.</li>`;
+        return;
+      }
 
-  // Detect delimiter: ; (common in ES locales) or ,
-  const delimiter = lines[0].includes(";") ? ";" : ",";
+      ul.innerHTML = items.map(s => {
+        const flag = s.flag ? `<span class="tag tag-flag">${s.flag}</span>` : "";
+        const note = s.note ? `<span class="tag tag-note">${s.note}</span>` : "";
+        return `
+          <li class="site-row">
+            <div class="site-name">${s.name}</div>
+            <div class="tags">${flag}${note}</div>
+          </li>
+        `;
+      }).join("");
+    }
 
-  // We ignore the header row (lines[0]) and use fixed column positions
-  // We ignore the header row (lines[0]) and use fixed column positions
-  for (let i = 1; i < lines.length; i++) {
-    if (!lines[i].trim()) continue;
+    // For Date.getDay() -> key (0 = Sunday, 6 = Saturday)
+    const keyByIndex = [
+      "sunday", "monday", "tuesday", "wednesday",
+      "thursday", "friday", "saturday"
+    ];
 
-    const cols = lines[i].split(delimiter);
-    // Col order: 0=day_key, 1=open, 2=close, 3=on_duty, 4=notes
-    const dayKeyRaw  = (cols[0] || "").trim().toLowerCase();
-    const openRaw    = (cols[1] || "").trim();
-    const closeRaw   = (cols[2] || "").trim();
-    const onDutyRaw  = (cols[3] || "").trim();
-    const notesRaw   = (cols[4] || "").trim();  // NUEVO
-
-    if (!dayKeyRaw) continue;
-
-    const dayKey = dayKeyRaw;
-    const open = openRaw || "10:00";
-    const close = closeRaw || "18:00";
-
-    const people = onDutyRaw
-      ? onDutyRaw.split(/[;|]/).map(p => p.trim()).filter(Boolean)
-      : [];
-
-    sched[dayKey] = people;
-    hours[dayKey] = { open, close };
-    notesByDay[dayKey] = notesRaw;   // NUEVO
-  }
-
-  schedule = sched;
-  businessHours = hours;
-  // notesByDay ya está actualizado
-
-  console.log("Loaded schedule:", schedule);
-  console.log("Loaded businessHours:", businessHours);
-}
-
-
-  function isOpenNow(dayKey, now) {
-    const hours = businessHours[dayKey];
-    if (!hours) return false;
-
-    const [openH, openM] = hours.open.split(":").map(Number);
-    const [closeH, closeM] = hours.close.split(":").map(Number);
-
-    const openMinutes = openH * 60 + openM;
-    const closeMinutes = closeH * 60 + closeM;
-    const currentMinutes = now.getHours() * 60 + now.getMinutes();
-
-    return currentMinutes >= openMinutes && currentMinutes < closeMinutes;
-  }
-
-  function formatHours(dayKey) {
-    const hours = businessHours[dayKey];
-    if (!hours) return "Closed";
-
-    const to12h = (timeStr) => {
-      const [hStr, mStr] = timeStr.split(":");
-      let h = Number(hStr);
-      const m = mStr;
-      const suffix = h >= 12 ? "PM" : "AM";
-      if (h === 0) h = 12;
-      else if (h > 12) h -= 12;
-      return `${h}:${m}${suffix}`;
+    // Label per key
+    const dayLabel = {
+      monday: "Monday",
+      tuesday: "Tuesday",
+      wednesday: "Wednesday",
+      thursday: "Thursday",
+      friday: "Friday",
+      saturday: "Saturday",
+      sunday: "Sunday"
     };
 
-    return `${to12h(hours.open)} – ${to12h(hours.close)}`;
-  }
+    // Order in which we want to DISPLAY rows (Mon -> Sun)
+    const displayOrder = [
+      "monday",
+      "tuesday",
+      "wednesday",
+      "thursday",
+      "friday",
+      "saturday",
+      "sunday"
+    ];
 
- function initSchedule() {
-  const tbody = document.getElementById("schedule-body");
-  tbody.innerHTML = "";
+    async function loadScheduleFromSheet() {
+      const res = await fetch(SHEET_CSV_URL);
+      const csv = await res.text();
 
-  const now = new Date();
-  const todayIndex = now.getDay();        // 0–6
-  const todayKey = keyByIndex[todayIndex]; // "monday", "tuesday", etc.
+      const lines = csv.trim().split(/\r?\n/);
+      if (lines.length < 2) return;
 
-  // Render in custom order (Monday -> Sunday)
-  for (const key of displayOrder) {
-    const dayName = dayLabel[key];
-    const row = document.createElement("tr");
+      const sched = {};
+      const hours = {};
 
-    if (key === todayKey) {
-      row.classList.add("today-row");
+      // Detect delimiter: ; (common in ES locales) or ,
+      const delimiter = lines[0].includes(";") ? ";" : ",";
+
+      for (let i = 1; i < lines.length; i++) {
+        if (!lines[i].trim()) continue;
+
+        const cols = lines[i].split(delimiter);
+        // Col order: 0=day_key, 1=open, 2=close, 3=on_duty, 4=notes
+        const dayKeyRaw  = (cols[0] || "").trim().toLowerCase();
+        const openRaw    = (cols[1] || "").trim();
+        const closeRaw   = (cols[2] || "").trim();
+        const onDutyRaw  = (cols[3] || "").trim();
+        const notesRaw   = (cols[4] || "").trim();
+
+        if (!dayKeyRaw) continue;
+
+        const dayKey = dayKeyRaw;
+        const open = openRaw || "10:00";
+        const close = closeRaw || "18:00";
+
+        const people = onDutyRaw
+          ? onDutyRaw.split(/[;|]/).map(p => p.trim()).filter(Boolean)
+          : [];
+
+        sched[dayKey] = people;
+        hours[dayKey] = { open, close };
+        notesByDay[dayKey] = notesRaw;
+      }
+
+      schedule = sched;
+      businessHours = hours;
+
+      console.log("Loaded schedule:", schedule);
+      console.log("Loaded businessHours:", businessHours);
     }
 
-       const people = schedule[key] && schedule[key].length
-      ? schedule[key].join(", ")
-      : "—";
+    function isOpenNow(dayKey, now) {
+      const hours = businessHours[dayKey];
+      if (!hours) return false;
 
-    const note = notesByDay[key] && notesByDay[key].length
-      ? notesByDay[key]
-      : "—";
+      const [openH, openM] = hours.open.split(":").map(Number);
+      const [closeH, closeM] = hours.close.split(":").map(Number);
 
-    const tdDay = document.createElement("td");
-    tdDay.textContent = dayName;
-    // ...
+      const openMinutes = openH * 60 + openM;
+      const closeMinutes = closeH * 60 + closeM;
+      const currentMinutes = now.getHours() * 60 + now.getMinutes();
 
-    const tdHours = document.createElement("td");
-    tdHours.textContent = formatHours(key);
-
-    const tdPeople = document.createElement("td");
-    tdPeople.textContent = people;
-
-    const tdNotes = document.createElement("td");  // NUEVO
-    tdNotes.textContent = note;                   // NUEVO
-
-    row.appendChild(tdDay);
-    row.appendChild(tdHours);
-    row.appendChild(tdPeople);
-    row.appendChild(tdNotes);                     // NUEVO
-
-    tbody.appendChild(row);
-  }
-
-  updateNowCard();
-  setInterval(updateNowCard, 60000);
-}
-
-
-  function updateNowCard() {
-    const now = new Date();
-    const todayIndex = now.getDay();
-    const todayKey = keyByIndex[todayIndex];
-
-    const statusPill = document.getElementById("status-pill");
-    const statusText = document.getElementById("status-text");
-    const nowTitle = document.getElementById("now-title");
-    const nowSubtitle = document.getElementById("now-subtitle");
-    const nowPeople = document.getElementById("now-people");
-    const nowTime = document.getElementById("now-time");
-
-    const open = isOpenNow(todayKey, now);
-
-    statusPill.classList.remove("status-open", "status-closed");
-
-    if (open) {
-      statusPill.classList.add("status-open");
-      statusText.textContent = "Open";
-    } else {
-      statusPill.classList.add("status-closed");
-      statusText.textContent = "Closed";
+      return currentMinutes >= openMinutes && currentMinutes < closeMinutes;
     }
 
-    nowTitle.textContent = dayLabel[todayKey];
-    nowSubtitle.textContent = formatHours(todayKey);
+    function formatHours(dayKey) {
+      const hours = businessHours[dayKey];
+      if (!hours) return "Closed";
 
-    const peopleToday = schedule[todayKey] || [];
-    if (open && peopleToday.length) {
-      nowPeople.innerHTML = `On duty now: <span>${peopleToday.join(", ")}</span>`;
-    } else if (!open) {
-      nowPeople.textContent = "Outside business hours.";
-    } else {
-      nowPeople.textContent = "No one assigned today.";
+      const to12h = (timeStr) => {
+        const [hStr, mStr] = timeStr.split(":");
+        let h = Number(hStr);
+        const m = mStr;
+        const suffix = h >= 12 ? "PM" : "AM";
+        if (h === 0) h = 12;
+        else if (h > 12) h -= 12;
+        return `${h}:${m}${suffix}`;
+      };
+
+      return `${to12h(hours.open)} – ${to12h(hours.close)}`;
     }
 
-    const pad = (n) => n.toString().padStart(2, "0");
-    const hours = pad(now.getHours());
-    const minutes = pad(now.getMinutes());
-    nowTime.textContent = `Current time: ${hours}:${minutes}`;
-  }
+    function initSchedule() {
+      const tbody = document.getElementById("schedule-body");
+      tbody.innerHTML = "";
 
-  document.addEventListener("DOMContentLoaded", async () => {
-    try {
-      await loadScheduleFromSheet();
-    } catch (err) {
-      console.error("Error loading schedule from sheet:", err);
+      const now = new Date();
+      const todayIndex = now.getDay();          // 0–6
+      const todayKey = keyByIndex[todayIndex];  // "monday", "tuesday", etc.
+
+      for (const key of displayOrder) {
+        const dayName = dayLabel[key];
+        const row = document.createElement("tr");
+
+        if (key === todayKey) row.classList.add("today-row");
+
+        const people = schedule[key] && schedule[key].length
+          ? schedule[key].join(", ")
+          : "—";
+
+        const note = notesByDay[key] && notesByDay[key].length
+          ? notesByDay[key]
+          : "—";
+
+        const tdDay = document.createElement("td");
+        tdDay.textContent = dayName;
+
+        const tdHours = document.createElement("td");
+        tdHours.textContent = formatHours(key);
+
+        const tdPeople = document.createElement("td");
+        tdPeople.textContent = people;
+
+        const tdNotes = document.createElement("td");
+        tdNotes.textContent = note;
+
+        row.appendChild(tdDay);
+        row.appendChild(tdHours);
+        row.appendChild(tdPeople);
+        row.appendChild(tdNotes);
+
+        tbody.appendChild(row);
+      }
+
+      updateNowCard();
+      setInterval(updateNowCard, 60000);
     }
-    initSchedule();
-  });
-</script>
 
-  
-  
+    function updateNowCard() {
+      const now = new Date();
+      const todayIndex = now.getDay();
+      const todayKey = keyByIndex[todayIndex];
+
+      const statusPill = document.getElementById("status-pill");
+      const statusText = document.getElementById("status-text");
+      const nowTitle = document.getElementById("now-title");
+      const nowSubtitle = document.getElementById("now-subtitle");
+      const nowPeople = document.getElementById("now-people");
+      const nowTime = document.getElementById("now-time");
+
+      const open = isOpenNow(todayKey, now);
+
+      statusPill.classList.remove("status-open", "status-closed");
+
+      if (open) {
+        statusPill.classList.add("status-open");
+        statusText.textContent = "Open";
+      } else {
+        statusPill.classList.add("status-closed");
+        statusText.textContent = "Closed";
+      }
+
+      nowTitle.textContent = dayLabel[todayKey];
+      nowSubtitle.textContent = formatHours(todayKey);
+
+      const peopleToday = schedule[todayKey] || [];
+      if (open && peopleToday.length) {
+        nowPeople.innerHTML = `On duty now: <span>${peopleToday.join(", ")}</span>`;
+      } else if (!open) {
+        nowPeople.textContent = "Outside business hours.";
+      } else {
+        nowPeople.textContent = "No one assigned today.";
+      }
+
+      const pad = (n) => n.toString().padStart(2, "0");
+      const hours = pad(now.getHours());
+      const minutes = pad(now.getMinutes());
+      nowTime.textContent = `Current time: ${hours}:${minutes}`;
+    }
+
+    document.addEventListener("DOMContentLoaded", async () => {
+      // No Support List init
+      renderNoSupportList();
+      const search = document.getElementById("noSupportSearch");
+      if (search) {
+        search.addEventListener("input", (e) => renderNoSupportList(e.target.value));
+      }
+
+      // Schedule init
+      try {
+        await loadScheduleFromSheet();
+      } catch (err) {
+        console.error("Error loading schedule from sheet:", err);
+      }
+      initSchedule();
+    });
+  </script>
 </body>
 </html>
