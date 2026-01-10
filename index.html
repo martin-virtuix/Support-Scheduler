@@ -319,6 +319,17 @@
   font-size: 14px;
   color: #cbd5e1;
 }
+/* ===== No support list: show ~3 rows then scroll ===== */
+.site-list {
+  --row-h: 52px;
+  max-height: calc(var(--row-h) * 3);
+  overflow-y: auto;
+  padding-right: 6px; /* espacio para scrollbar */
+}
+
+.site-row {
+  min-height: var(--row-h);
+}
   </style>
 </head>
 
