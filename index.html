@@ -15,7 +15,7 @@
     }
 
     .container {
-      max-width: 900px;
+      max-width: 1200px; /* wider to fit 2 panels */
       margin: 0 auto;
       padding: 24px;
     }
@@ -26,10 +26,41 @@
       text-align: center;
     }
 
+    .header img {
+      max-width: 140px;
+      height: auto;
+      display: block;
+      margin: 0 auto 16px;
+    }
+
+    /* ===== Two-panel layout ===== */
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+      align-items: start;
+    }
+
+    .panel-title {
+      margin: 0 0 12px 0;
+      font-size: 16px;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      color: #e5e7eb;
+      opacity: 0.95;
+    }
+
+    .card {
+      border-radius: 12px;
+      padding: 16px 20px;
+      background: #020617;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+    }
+
     .now-card {
       border-radius: 12px;
       padding: 16px 20px;
-      margin-bottom: 24px;
+      margin-bottom: 16px;
       background: #020617;
       box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
       display: flex;
@@ -121,26 +152,12 @@
       border-bottom: 1px solid #1f2937;
     }
 
-    tbody tr:nth-child(even) { background: #020617; }
-    tbody tr:nth-child(odd) { background: #020617; }
-
     tbody tr + tr td {
       border-top: 1px solid #111827;
     }
 
     .today-row {
       background: #111827;
-    }
-
-    .today-badge {
-      font-size: 11px;
-      text-transform: uppercase;
-      letter-spacing: 0.06em;
-      padding: 2px 8px;
-      border-radius: 999px;
-      background: rgba(96, 165, 250, 0.15);
-      color: #60a5fa;
-      margin-left: 8px;
     }
 
     /* ========= No Support List styles ========= */
@@ -247,6 +264,10 @@
       text-align: center;
     }
 
+    @media (max-width: 980px) {
+      .grid { grid-template-columns: 1fr; }
+    }
+
     @media (max-width: 640px) {
       .container { padding: 16px; }
       h1 { font-size: 22px; }
@@ -258,45 +279,63 @@
 
 <body>
   <div class="container">
-    <h1>Omni Arena & Omni One Support Schedule (JAN 5th - JAN 11th)</h1>
+    <h1>Omni Arena & Omni One Support Schedule</h1>
 
-    <!-- HEADER WITH VIRTUIX LOGO -->
     <div class="header">
-      <img
-        src="omniarena_logo_color2.png"
-        alt="Virtuix logo"
-        style="max-width: 140px; height: auto; display: block; margin: 0 auto 16px;"
-      >
+      <img src="omniarena_logo_color2.png" alt="Virtuix logo">
     </div>
 
-    <div class="now-card">
-      <div class="status-row">
-        <div>
-          <div id="status-pill" class="status-pill">
-            <div class="dot"></div>
-            <span id="status-text">Checking...</span>
+    <!-- ===== Two panels ===== -->
+    <div class="grid">
+      <!-- LEFT: Current Week -->
+      <div class="panel">
+        <div class="panel-title" id="current-title">Current week</div>
+
+        <div class="now-card">
+          <div class="status-row">
+            <div>
+              <div id="status-pill" class="status-pill">
+                <div class="dot"></div>
+                <span id="status-text">Checking...</span>
+              </div>
+              <div class="now-title" id="now-title">Now</div>
+              <div class="now-subtitle" id="now-subtitle"></div>
+            </div>
+            <div class="now-subtitle" id="now-time"></div>
           </div>
-          <div class="now-title" id="now-title">Now</div>
-          <div class="now-subtitle" id="now-subtitle"></div>
+          <div class="now-people" id="now-people"></div>
         </div>
-        <div class="now-subtitle" id="now-time"></div>
-      </div>
-      <div class="now-people" id="now-people"></div>
-    </div>
 
-    <table>
-      <thead>
-        <tr>
-          <th>Day</th>
-          <th>Business hours</th>
-          <th>On duty</th>
-          <th>Notes</th>
-        </tr>
-      </thead>
-      <tbody id="schedule-body">
-        <!-- Filled by JS -->
-      </tbody>
-    </table>
+        <table>
+          <thead>
+            <tr>
+              <th>Day</th>
+              <th>Business hours</th>
+              <th>On duty</th>
+              <th>Notes</th>
+            </tr>
+          </thead>
+          <tbody id="schedule-body-current"></tbody>
+        </table>
+      </div>
+
+      <!-- RIGHT: Next Week -->
+      <div class="panel">
+        <div class="panel-title" id="next-title">Next week (preview)</div>
+
+        <table>
+          <thead>
+            <tr>
+              <th>Day</th>
+              <th>Business hours</th>
+              <th>On duty</th>
+              <th>Notes</th>
+            </tr>
+          </thead>
+          <tbody id="schedule-body-next"></tbody>
+        </table>
+      </div>
+    </div>
 
     <!-- ========= No Support List ========= -->
     <section class="section-card" id="no-support">
@@ -305,8 +344,8 @@
         <div class="now-subtitle" id="no-support-count"></div>
       </div>
       <div class="now-subtitle">
-  Sites currently excluded from support.
-  <span class="tag tag-flag">*</span> sites are behind on an old invoice and will not receive a shipment even if they submit payment.
+        Sites currently excluded from support.
+        <span class="tag tag-flag">*</span> sites are behind on an old invoice and will not receive a shipment even if they submit payment.
       </div>
       <input id="noSupportSearch" class="input" type="search" placeholder="Search a site..." autocomplete="off" />
       <ul id="noSupportList" class="site-list"></ul>
@@ -318,13 +357,10 @@
   </div>
 
   <script>
-    // ====== CONFIG: URL of your published Google Sheet CSV ======
-    const SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vT_P-MDtJ5_22Dftrk9JC9gQmaWzIM_YLBVEJ7n_hyU4bm4PSgzUbWOdIB-e184eJpaL2SUqB92tumS/pub?output=csv";
-
-    // These will be filled dynamically from the sheet
-    let schedule = {};
-    let businessHours = {};
-    let notesByDay = {};
+    // ====== CONFIG: TWO CSV URLs (same spreadsheet, different tabs) ======
+    // Publish each TAB as CSV and paste the "pub?output=csv&gid=XXXX" links here:
+    const CURRENT_WEEK_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vT_P-MDtJ5_22Dftrk9JC9gQmaWzIM_YLBVEJ7n_hyU4bm4PSgzUbWOdIB-e184eJpaL2SUqB92tumS/pub?gid=0&single=true&output=csv";
+    const NEXT_WEEK_CSV_URL    = "https://docs.google.com/spreadsheets/d/e/2PACX-1vT_P-MDtJ5_22Dftrk9JC9gQmaWzIM_YLBVEJ7n_hyU4bm4PSgzUbWOdIB-e184eJpaL2SUqB92tumS/pub?gid=251849400&single=true&output=csv";
 
     // ========= No Support List data =========
     const NO_SUPPORT_SITES = [
@@ -359,15 +395,10 @@
       const q = (filterText || "").trim().toLowerCase();
 
       const items = NO_SUPPORT_SITES
-        .filter(s => {
-          const haystack = `${s.name} ${s.note || ""} ${s.flag || ""}`.toLowerCase();
-          return haystack.includes(q);
-        })
+        .filter(s => (`${s.name} ${s.note || ""} ${s.flag || ""}`).toLowerCase().includes(q))
         .sort((a, b) => a.name.localeCompare(b.name));
 
-      if (countEl) {
-        countEl.textContent = `${items.length} / ${NO_SUPPORT_SITES.length} shown`;
-      }
+      if (countEl) countEl.textContent = `${items.length} / ${NO_SUPPORT_SITES.length} shown`;
 
       if (!items.length) {
         ul.innerHTML = `<li class="empty">No matches.</li>`;
@@ -387,12 +418,8 @@
     }
 
     // For Date.getDay() -> key (0 = Sunday, 6 = Saturday)
-    const keyByIndex = [
-      "sunday", "monday", "tuesday", "wednesday",
-      "thursday", "friday", "saturday"
-    ];
+    const keyByIndex = ["sunday","monday","tuesday","wednesday","thursday","friday","saturday"];
 
-    // Label per key
     const dayLabel = {
       monday: "Monday",
       tuesday: "Tuesday",
@@ -403,64 +430,52 @@
       sunday: "Sunday"
     };
 
-    // Order in which we want to DISPLAY rows (Mon -> Sun)
-    const displayOrder = [
-      "monday",
-      "tuesday",
-      "wednesday",
-      "thursday",
-      "friday",
-      "saturday",
-      "sunday"
-    ];
+    const displayOrder = ["monday","tuesday","wednesday","thursday","friday","saturday","sunday"];
 
-    async function loadScheduleFromSheet() {
-      const res = await fetch(SHEET_CSV_URL);
-      const csv = await res.text();
+    function parseCSV(text) {
+      const lines = text.trim().split(/\r?\n/);
+      if (lines.length < 2) return null;
 
-      const lines = csv.trim().split(/\r?\n/);
-      if (lines.length < 2) return;
-
-      const sched = {};
-      const hours = {};
-
-      // Detect delimiter: ; (common in ES locales) or ,
       const delimiter = lines[0].includes(";") ? ";" : ",";
+
+      const schedule = {};
+      const businessHours = {};
+      const notesByDay = {};
 
       for (let i = 1; i < lines.length; i++) {
         if (!lines[i].trim()) continue;
-
         const cols = lines[i].split(delimiter);
+
         // Col order: 0=day_key, 1=open, 2=close, 3=on_duty, 4=notes
-        const dayKeyRaw  = (cols[0] || "").trim().toLowerCase();
-        const openRaw    = (cols[1] || "").trim();
-        const closeRaw   = (cols[2] || "").trim();
-        const onDutyRaw  = (cols[3] || "").trim();
-        const notesRaw   = (cols[4] || "").trim();
+        const dayKey = (cols[0] || "").trim().toLowerCase();
+        if (!dayKey) continue;
 
-        if (!dayKeyRaw) continue;
-
-        const dayKey = dayKeyRaw;
-        const open = openRaw || "10:00";
-        const close = closeRaw || "18:00";
+        const open  = (cols[1] || "").trim() || "10:00";
+        const close = (cols[2] || "").trim() || "18:00";
+        const onDutyRaw = (cols[3] || "").trim();
+        const notesRaw  = (cols[4] || "").trim();
 
         const people = onDutyRaw
           ? onDutyRaw.split(/[;|]/).map(p => p.trim()).filter(Boolean)
           : [];
 
-        sched[dayKey] = people;
-        hours[dayKey] = { open, close };
+        schedule[dayKey] = people;
+        businessHours[dayKey] = { open, close };
         notesByDay[dayKey] = notesRaw;
       }
 
-      schedule = sched;
-      businessHours = hours;
-
-      console.log("Loaded schedule:", schedule);
-      console.log("Loaded businessHours:", businessHours);
+      return { schedule, businessHours, notesByDay };
     }
 
-    function isOpenNow(dayKey, now) {
+    async function loadScheduleBundle(csvUrl) {
+      const res = await fetch(csvUrl);
+      const csv = await res.text();
+      const bundle = parseCSV(csv);
+      if (!bundle) throw new Error("CSV parse failed");
+      return bundle;
+    }
+
+    function isOpenNow(dayKey, now, businessHours) {
       const hours = businessHours[dayKey];
       if (!hours) return false;
 
@@ -474,7 +489,7 @@
       return currentMinutes >= openMinutes && currentMinutes < closeMinutes;
     }
 
-    function formatHours(dayKey) {
+    function formatHours(dayKey, businessHours) {
       const hours = businessHours[dayKey];
       if (!hours) return "Closed";
 
@@ -491,37 +506,33 @@
       return `${to12h(hours.open)} – ${to12h(hours.close)}`;
     }
 
-    function initSchedule() {
-      const tbody = document.getElementById("schedule-body");
+    function renderScheduleTable(tbodyId, bundle, highlightToday) {
+      const tbody = document.getElementById(tbodyId);
+      if (!tbody) return;
       tbody.innerHTML = "";
 
       const now = new Date();
-      const todayIndex = now.getDay();          // 0–6
-      const todayKey = keyByIndex[todayIndex];  // "monday", "tuesday", etc.
+      const todayKey = keyByIndex[now.getDay()];
 
       for (const key of displayOrder) {
-        const dayName = dayLabel[key];
         const row = document.createElement("tr");
-
-        if (key === todayKey) row.classList.add("today-row");
-
-        const people = schedule[key] && schedule[key].length
-          ? schedule[key].join(", ")
-          : "—";
-
-        const note = notesByDay[key] && notesByDay[key].length
-          ? notesByDay[key]
-          : "—";
+        if (highlightToday && key === todayKey) row.classList.add("today-row");
 
         const tdDay = document.createElement("td");
-        tdDay.textContent = dayName;
+        tdDay.textContent = dayLabel[key];
 
         const tdHours = document.createElement("td");
-        tdHours.textContent = formatHours(key);
+        tdHours.textContent = formatHours(key, bundle.businessHours);
 
+        const people = (bundle.schedule[key] && bundle.schedule[key].length)
+          ? bundle.schedule[key].join(", ")
+          : "—";
         const tdPeople = document.createElement("td");
         tdPeople.textContent = people;
 
+        const note = (bundle.notesByDay[key] && bundle.notesByDay[key].length)
+          ? bundle.notesByDay[key]
+          : "—";
         const tdNotes = document.createElement("td");
         tdNotes.textContent = note;
 
@@ -532,69 +543,75 @@
 
         tbody.appendChild(row);
       }
+    }
+
+    function startNowCardAutoupdate(currentBundle) {
+      function updateNowCard() {
+        const now = new Date();
+        const todayKey = keyByIndex[now.getDay()];
+
+        const statusPill = document.getElementById("status-pill");
+        const statusText = document.getElementById("status-text");
+        const nowTitle = document.getElementById("now-title");
+        const nowSubtitle = document.getElementById("now-subtitle");
+        const nowPeople = document.getElementById("now-people");
+        const nowTime = document.getElementById("now-time");
+
+        const open = isOpenNow(todayKey, now, currentBundle.businessHours);
+
+        statusPill.classList.remove("status-open", "status-closed");
+        if (open) {
+          statusPill.classList.add("status-open");
+          statusText.textContent = "Open";
+        } else {
+          statusPill.classList.add("status-closed");
+          statusText.textContent = "Closed";
+        }
+
+        nowTitle.textContent = dayLabel[todayKey];
+        nowSubtitle.textContent = formatHours(todayKey, currentBundle.businessHours);
+
+        const peopleToday = currentBundle.schedule[todayKey] || [];
+        if (open && peopleToday.length) {
+          nowPeople.innerHTML = `On duty now: <span>${peopleToday.join(", ")}</span>`;
+        } else if (!open) {
+          nowPeople.textContent = "Outside business hours.";
+        } else {
+          nowPeople.textContent = "No one assigned today.";
+        }
+
+        const pad = (n) => n.toString().padStart(2, "0");
+        nowTime.textContent = `Current time: ${pad(now.getHours())}:${pad(now.getMinutes())}`;
+      }
 
       updateNowCard();
       setInterval(updateNowCard, 60000);
-    }
-
-    function updateNowCard() {
-      const now = new Date();
-      const todayIndex = now.getDay();
-      const todayKey = keyByIndex[todayIndex];
-
-      const statusPill = document.getElementById("status-pill");
-      const statusText = document.getElementById("status-text");
-      const nowTitle = document.getElementById("now-title");
-      const nowSubtitle = document.getElementById("now-subtitle");
-      const nowPeople = document.getElementById("now-people");
-      const nowTime = document.getElementById("now-time");
-
-      const open = isOpenNow(todayKey, now);
-
-      statusPill.classList.remove("status-open", "status-closed");
-
-      if (open) {
-        statusPill.classList.add("status-open");
-        statusText.textContent = "Open";
-      } else {
-        statusPill.classList.add("status-closed");
-        statusText.textContent = "Closed";
-      }
-
-      nowTitle.textContent = dayLabel[todayKey];
-      nowSubtitle.textContent = formatHours(todayKey);
-
-      const peopleToday = schedule[todayKey] || [];
-      if (open && peopleToday.length) {
-        nowPeople.innerHTML = `On duty now: <span>${peopleToday.join(", ")}</span>`;
-      } else if (!open) {
-        nowPeople.textContent = "Outside business hours.";
-      } else {
-        nowPeople.textContent = "No one assigned today.";
-      }
-
-      const pad = (n) => n.toString().padStart(2, "0");
-      const hours = pad(now.getHours());
-      const minutes = pad(now.getMinutes());
-      nowTime.textContent = `Current time: ${hours}:${minutes}`;
     }
 
     document.addEventListener("DOMContentLoaded", async () => {
       // No Support List init
       renderNoSupportList();
       const search = document.getElementById("noSupportSearch");
-      if (search) {
-        search.addEventListener("input", (e) => renderNoSupportList(e.target.value));
-      }
+      if (search) search.addEventListener("input", (e) => renderNoSupportList(e.target.value));
 
-      // Schedule init
       try {
-        await loadScheduleFromSheet();
+        const [currentBundle, nextBundle] = await Promise.all([
+          loadScheduleBundle(CURRENT_WEEK_CSV_URL),
+          loadScheduleBundle(NEXT_WEEK_CSV_URL),
+        ]);
+
+        renderScheduleTable("schedule-body-current", currentBundle, true);
+        renderScheduleTable("schedule-body-next", nextBundle, false);
+
+        startNowCardAutoupdate(currentBundle);
       } catch (err) {
-        console.error("Error loading schedule from sheet:", err);
+        console.error("Error loading schedules:", err);
       }
-      initSchedule();
     });
+  </script>
+</body>
+</html>
+
   </script>
 </body>
 </html>
